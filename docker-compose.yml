@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  
+  fastapi:
+    image: datascientest/fastapi:1.0.0
+    container_name: fastapi_container
+    networks:
+      - api_network
+    ports:
+      - "8000:8000"
+
+  authentication:
+    image: authentication_image
+    build: ./authentication
+    container_name: authentication_container
+    networks:
+      - api_network
+    environment:
+      - LOG=1
+    volumes:
+      - ./log:/home/log
+    depends_on:
+      - "fastapi"
+
+  authorization:
+    image: authorization_image
+    build: ./authorization
+    container_name: authorization_container
+    networks:
+      - api_network
+    environment:
+      - LOG=1
+    volumes:
+      - ./log:/home/log
+    depends_on:
+      - "fastapi"
+
+  content:
+    image: content_image
+    build: ./content
+    container_name: content_container
+    networks:
+      - api_network
+    environment:
+      - LOG=1
+    volumes:
+      - ./log:/home/log
+    depends_on:
+      - "fastapi"
+
+networks:
+  api_network:
